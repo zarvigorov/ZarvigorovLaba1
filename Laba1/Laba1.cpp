@@ -1,6 +1,7 @@
 ﻿#include <iostream>
-//#include <string>
+#include <string>
 #include <conio.h>
+#include <fstream>
 
 using namespace std;
 
@@ -196,6 +197,52 @@ void outputstation(const station& S)
 	}
 }
 
+void printpipe(pipe& Pipe) {
+	ofstream fout;
+	fout.open("File.txt");
+	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl <<
+		Pipe.work;
+	fout.close();
+}
+void printstation(station& Station) {
+	ofstream fout;
+	fout.open("File.txt");
+	fout << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
+	fout.close();
+}
+void printall(pipe& Pipe, station& Station) {
+	ofstream fout;
+	fout.open("File.txt");
+	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl << Pipe.work << endl << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
+	fout.close();
+}
+void write(pipe& Pipe, station& Station) {
+	ifstream fin;
+	fin.open("File.txt", ios::app);
+	if (fin.peek() != -1)
+	{
+		fin >> Pipe.id;
+		fin >> Pipe.lenght >> Pipe.diameter >> Pipe.work;
+		fin >> Station.id;
+		fin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+		getline(fin, Station.name);
+		fin >> Station.number >> Station.work_station >> Station.percent;
+		fin.close();
+	}
+	else
+	{
+		cout << "Error!";
+	}
+}
+
+void save(pipe& Pipe, station& Station) {
+	if ((Pipe.id != -1) && (Station.id != -1))
+		printall(Pipe, Station);
+	else if (Pipe.id != -1)
+		printpipe(Pipe);
+	else if (Station.id != -1)
+		printstation(Station);
+}
 
 int main()
 {
@@ -242,12 +289,12 @@ int main()
 			changestation(Station);
 			break;
 
-		//case 7:
-		//	save(Pipe, Station);
-		//	break;
-		//case 8:
-		//	write(Pipe, Station);
-		//	break;
+		case 7:
+			save(Pipe, Station);
+			break;
+		case 8:
+			write(Pipe, Station);
+		break;
 		case 9:
 			exit(0);
 		}
