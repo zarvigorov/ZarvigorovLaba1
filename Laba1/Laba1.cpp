@@ -27,7 +27,7 @@ int GetCorrectNumber(int min, int max)
 		cout << "Invalid Input!\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please select a number from (" << min << " - " << max << ") : ";
+		cout << "Please select a number from (" << min + 1  << " - " << max << ") : ";
 		cin >> a;
 	}
 	return a;
@@ -83,17 +83,30 @@ bool getbool() {
 			cout << "Error! Input correct value!!!" << endl;
 	}
 }
-//void getstring {
-//}
+
+void getstring(string& k) {
+	string a;
+	cin.ignore(2000, '\n');
+	getline(cin, a);
+	k = a;
+	a.erase(remove(a.begin(), a.end(), ' '), a.end());
+	while (a.empty()) {
+		cout << "Try again.\n";
+		getline(cin, a);
+		k = a;
+		a.erase(remove(a.begin(), a.end(), ' '), a.end());
+	}
+	k = k.substr(k.find_first_not_of(" \t"));
+}
 
 void compare(int& a, int max) {
 	cin >> a;
-	while (a <= 0 || cin.peek() != '\n' || a > max)
+	while (a < 0 || cin.peek() != '\n' || a > max)
 	{
 		cout << "Invalid Input!\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please re-enter [positive only]: ";
+		cout << "Please select a number from 1 to " << max << ": ";
 		cin >> a;
 	}
 }
@@ -113,7 +126,7 @@ void inputstation(station& Station)
 {
 	Station.id = 0;
 	cout << "Name of station:" << endl;
-	//getstring(Station.name);
+	getstring(Station.name);
 	cout << "How many workshop?" << endl;
 	getint(Station.number);
 	cout << "How many working? " << endl;
@@ -139,12 +152,12 @@ void changepipe(pipe& Pipe)
 
 	else
 	{
-		cout << "Write pipe again" << endl;
+		cout << "At first add a pipe " << endl;
 		inputpipe(Pipe);
 	}
 }
 
-void outputpipe(const pipe& P)
+void outputpipe(const pipe P)
 {
 	if (P.id != -1) {
 		cout << "id:" << P.id << endl;
@@ -170,14 +183,14 @@ void changestation(station& Station)
 		switch (GetCorrectNumber(0, 1))
 		{
 		case 1:
-			cout << "Working workshop" << endl;
+			cout << "How many working? " << endl;
 			compare(Station.work_station, Station.number);
 			break;
 
 		}
 	}
 	else {
-		cout << "Write station again!!!" << endl;
+		cout << "At first add a station" << endl;
 		inputstation(Station);
 	}
 }
@@ -197,26 +210,28 @@ void outputstation(const station& S)
 	}
 }
 
-void printpipe(pipe& Pipe) {
+void printpipe(const pipe Pipe) {
 	ofstream fout;
 	fout.open("File.txt");
 	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl <<
 		Pipe.work;
 	fout.close();
 }
-void printstation(station& Station) {
+void printstation(const station Station) {
 	ofstream fout;
 	fout.open("File.txt");
 	fout << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
 	fout.close();
 }
-void printall(pipe& Pipe, station& Station) {
+void printall(const pipe Pipe, const station Station) {
 	ofstream fout;
 	fout.open("File.txt");
 	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl << Pipe.work << endl << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
 	fout.close();
 }
-void write(pipe& Pipe, station& Station) {
+
+
+void write(pipe& Pipe,station& Station) {
 	ifstream fin;
 	fin.open("File.txt", ios::app);
 	if (fin.peek() != -1)
@@ -294,7 +309,7 @@ int main()
 			break;
 		case 8:
 			write(Pipe, Station);
-		break;
+			break;
 		case 9:
 			exit(0);
 		}
