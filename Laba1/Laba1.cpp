@@ -22,50 +22,38 @@ int GetCorrectNumber(int min, int max)
 {
 	int a;
 	cin >> a;
-	while (a <= min || cin.peek() != '\n' || a > max)
+	while (a < min || cin.peek() != '\n' || a > max)
 	{
 		cout << "Invalid Input!\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please select a number from (" << min + 1  << " - " << max << ") : ";
+		cout << "Please a number from (" << min  << " - " << max << ") : ";
 		cin >> a;
 	}
 	return a;
 }
 
 
-void getfloat(float& a) {
+void getfloat(float& a, float min, float max) {
 	cin >> a;
-
-	while (a <= 0 || cin.peek() != '\n' || a >= 100)
+	while (a < min || cin.peek() != '\n' || a > max)
 	{
 		cout << "Invalid Input!\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please add number from 1 to 99: ";
-		cin >> a;
-	}
-}
-void getint(int& a) {
-	cin >> a;
-	while (a <= 0 || cin.peek() != '\n' || a >= 100)
-	{
-		cout << "Invalid Input!\n";
-		cin.clear();
-		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please add number from 1 to 99: ";
+		cout << "Please add number from " << min << " to " << max << ": ";
 		cin >> a;
 	}
 }
 
-void geteff(float& a) {
+void getint(int& a, int min , int max) {
 	cin >> a;
-	while (a <= 0 || cin.peek() != '\n' || a > 100)
+	while (a < min || cin.peek() != '\n' || a > max)
 	{
 		cout << "Invalid Input!\n";
 		cin.clear();
 		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		cout << "Please add number from 1 to 99: ";
+		cout << "Please add number from " << min << " to " << max << ": ";
 		cin >> a;
 	}
 }
@@ -87,7 +75,7 @@ bool getbool() {
 void getstring(string& k) {
 	string a;
 	cin.ignore(2000, '\n');
-	getline(cin, a);
+	getline(cin >> ws, a);
 	k = a;
 	a.erase(remove(a.begin(), a.end(), ' '), a.end());
 	while (a.empty()) {
@@ -115,9 +103,9 @@ void inputpipe(pipe& Pipe)
 {
 	Pipe.id = 0;
 	cout << "Pipe lenght" << endl;
-	getfloat(Pipe.lenght);
+	getfloat(Pipe.lenght, 0, 10000);
 	cout << "Pipe diameter" << endl;
-	getfloat(Pipe.diameter);
+	getfloat(Pipe.diameter, 0 , 1000);
 	cout << "Is it work? 0 - No; 1 - Yes" << endl;
 	Pipe.work = getbool();
 	cout << endl;
@@ -128,26 +116,19 @@ void inputstation(station& Station)
 	cout << "Name of station:" << endl;
 	getstring(Station.name);
 	cout << "How many workshop?" << endl;
-	getint(Station.number);
+	getint(Station.number, 0 , 100);
 	cout << "How many working? " << endl;
 	compare(Station.work_station, Station.number);
 	cout << "Percent of station" << endl;
-	geteff(Station.percent);
+	getfloat(Station.percent, 0, 100);
 }
 void changepipe(pipe& Pipe)
 {
 	if (Pipe.id != -1)
 	{
-		cout << "What do you want to change" << endl;
-		cout << "1.Pipe work" << endl;
-
-		switch (GetCorrectNumber(0, 1))
-		{
-		case 1:
-			cout << "Work status" << endl;
+		cout << "Now pipe has status " << Pipe.work << endl << "Add a new status: ";
 			Pipe.work = getbool();
-			break;
-		}
+			cout << endl;
 	}
 
 	else
@@ -178,22 +159,16 @@ void changestation(station& Station)
 {
 	if (Station.id != -1)
 	{
-		cout << "What do you want to choose?" << endl;
-		cout << "1.Number of working workshop" << endl;
-		switch (GetCorrectNumber(0, 1))
-		{
-		case 1:
-			cout << "How many working? " << endl;
-			compare(Station.work_station, Station.number);
-			break;
-
-		}
+		cout << "Now number of working workshop is " << Station.work_station << endl << "Add a new number: ";
+		compare(Station.work_station, Station.number);
+		cout << endl;
 	}
 	else {
 		cout << "At first add a station" << endl;
 		inputstation(Station);
 	}
 }
+
 
 void outputstation(const station& S)
 {
@@ -210,54 +185,43 @@ void outputstation(const station& S)
 	}
 }
 
-void printpipe(const pipe Pipe) {
-	ofstream fout;
-	fout.open("File.txt");
-	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl <<
-		Pipe.work;
-	fout.close();
-}
-void printstation(const station Station) {
-	ofstream fout;
-	fout.open("File.txt");
-	fout << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
-	fout.close();
-}
 void printall(const pipe Pipe, const station Station) {
 	ofstream fout;
 	fout.open("File.txt");
-	fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl << Pipe.work << endl << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
+	if (Pipe.id != -1)
+		fout << Pipe.id << endl << Pipe.lenght << endl << Pipe.diameter << endl <<
+		Pipe.work << endl;
+	else fout << -1 << endl;
+	if (Station.id != -1)
+		fout << Station.id << endl << Station.name << endl << Station.number << endl << Station.work_station << endl << Station.percent;
+	else fout << -1 << endl;
 	fout.close();
 }
 
 
 void write(pipe& Pipe,station& Station) {
 	ifstream fin;
-	fin.open("File.txt", ios::app);
-	if (fin.peek() != -1)
+	fin.open("File.txt", ios::in);
+	if (fin.is_open() && !fin.peek() == EOF)
 	{
 		fin >> Pipe.id;
+		if (Pipe.id != -1)
 		fin >> Pipe.lenght >> Pipe.diameter >> Pipe.work;
 		fin >> Station.id;
-		fin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-		getline(fin, Station.name);
-		fin >> Station.number >> Station.work_station >> Station.percent;
+		if (Station.id != -1)
+		{
+			fin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+			getline(fin, Station.name);
+			fin >> Station.number >> Station.work_station >> Station.percent;
+		}
 		fin.close();
 	}
 	else
 	{
-		cout << "Error!";
+		cout << "Error!\n";
 	}
 }
 
-void save(pipe& Pipe, station& Station) {
-	if ((Pipe.id != -1) && (Station.id != -1))
-		printall(Pipe, Station);
-	else if (Pipe.id != -1)
-		printpipe(Pipe);
-	else if (Station.id != -1)
-		printstation(Station);
-}
 
 int main()
 {
@@ -278,8 +242,7 @@ int main()
 		cout << "8.Load" << endl;
 		cout << "9.Exit" << endl;
 		cout << "Choose" << endl;
-
-		switch (GetCorrectNumber(0, 9)) {
+		switch (GetCorrectNumber(0, 10)) {
 		case 1:
 			inputpipe(Pipe);
 			break;
@@ -305,13 +268,13 @@ int main()
 			break;
 
 		case 7:
-			save(Pipe, Station);
+			printall(Pipe, Station);
 			break;
 		case 8:
 			write(Pipe, Station);
 			break;
 		case 9:
-			exit(0);
+			return 0;
 		}
 	}
 
