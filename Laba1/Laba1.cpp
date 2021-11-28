@@ -202,7 +202,11 @@ void printall(const pipe Pipe, const station Station) {
 void write(pipe& Pipe,station& Station) {
 	ifstream fin;
 	fin.open("File.txt", ios::in);
-	if (fin.is_open() && !fin.peek() == EOF)
+	if (!fin.is_open()) 
+		cout << "File not open.\n";
+	else if (fin.peek() == EOF) 
+		cout << "File is empty.";
+	else
 	{
 		fin >> Pipe.id;
 		if (Pipe.id != -1)
@@ -215,10 +219,6 @@ void write(pipe& Pipe,station& Station) {
 			fin >> Station.number >> Station.work_station >> Station.percent;
 		}
 		fin.close();
-	}
-	else
-	{
-		cout << "Error!\n";
 	}
 }
 
